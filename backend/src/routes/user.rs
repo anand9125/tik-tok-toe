@@ -1,10 +1,8 @@
 use std::env;
-
 use actix_web::web::{Data, Json};
 use db::{Db};
 use jsonwebtoken::{EncodingKey, Header, encode};
-
-use crate::{JwtClaims, models::{Claims, SigninResponse, UserRequest, UserResponse}};
+use crate::{ models::{Claims, SigninResponse, UserRequest, UserResponse}};
 
 
 
@@ -35,13 +33,6 @@ pub async fn sign_in(db: Data<Db>,body: Json<UserRequest>)->Result<Json<SigninRe
                .map_err(|e| actix_web::error::ErrorInternalServerError(e.to_string()))?.as_bytes()
         )  
     ).map_err(|e| actix_web::error::ErrorInternalServerError(e.to_string()))?;
-
-
     Ok(Json(SigninResponse{token}))
- }
+}
 
-
- pub async fn me_handler(db: Data<Db>,claim:JwtClaims){
-    let user_id = claim.0.sub;
-    
- }

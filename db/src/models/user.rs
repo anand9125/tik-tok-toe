@@ -1,15 +1,15 @@
 use crate::Db;
 use anyhow::{Ok, Result};
 use serde::{Deserialize, Serialize};
-
+use uuid::Uuid;
 #[derive(Serialize,Deserialize)]
 pub struct CreateUserResponse {
-    pub id : String
+    pub id : Uuid
 }
 
 #[derive(Serialize,Deserialize)]
 pub struct User{
-    pub id :String,
+    pub id :Uuid,
     pub username : String,
     pub password : String
 }
