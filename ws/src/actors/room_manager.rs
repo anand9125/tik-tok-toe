@@ -92,6 +92,7 @@ impl Handler<JoinRoom> for RoomManager{
         }else {
             Uuid::new_v4()
         };
+
         //get or create a room 
         let room = self.rooms.entry(room_id)
             .or_insert_with(||{    //use of clousers =>create a value only if key does not exist
@@ -127,7 +128,7 @@ impl Handler<JoinRoom> for RoomManager{
         }
          //Notify others player that someone joined
         for(uid,a) in room.addrs.iter(){
-            if uid != msg.user_id {
+            if uid != &msg.user_id {
                 let other_payload = serde_json::json!({
                     "type":"player_joined",
                     "room_id":room_id.to_string(),
@@ -178,8 +179,8 @@ impl Handler<LeaveRoom> for RoomManager{
             })
             .to_string();
             
-            for(uui,a) in room.addrs.iter(){
-                let _ = a.do_send(payload);
+            for(_,a) in room.addrs.iter(){
+                let _ = a.do_send(RoomMessage(payload.clone()));
             }
 
             if room.players.is_empty(){
@@ -233,8 +234,8 @@ impl Handler<PlayerMove> for RoomManager{
         })
         .to_string();
 
-        for(uid,a) in room.addrs.iter(){
-            let _ = a.do_send(RoomMessage(payload));
+        for(_,a) in room.addrs.iter(){
+            let _ = a.do_send(RoomMessage( payload.clone()));
         }
         if room.game.status != "playing" {
             log::info!(

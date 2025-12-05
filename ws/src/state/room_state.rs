@@ -2,7 +2,7 @@ use std::{collections::HashMap};
 use actix::Addr;
 use uuid::Uuid;
 
-use crate::GameState;
+use crate::{GameState, WsClient};
 
 pub struct Room {
     pub id : Uuid,
