@@ -71,7 +71,9 @@ impl Message for RegisterClient {  //This tells Actix: "RegisterClient is a mess
 impl Handler<RegisterClient> for RoomManager {
     type Result = ();
 
-    fn handle(&mut self, msg: RegisterClient, _: &mut Context<Self>) {
+  
+  
+   {
         self.clients.insert(msg.user_id, msg.addr);
         println!("Registered client: {}", msg.user_id);
     }
@@ -286,3 +288,41 @@ impl StreamHandler<Result<ws::Message,ws::ProtocolError>> for WsClient { //WsCli
 // Non-blocking
 // Event-driven
 // Safe concurrency
+
+
+
+
+
+
+
+
+
+
+
+# ctx in an Actix actor handler means:
+
+The actor’s context — the runtime environment in which the actor is running.
+
+In simple words:ctx = the control panel for your actor.
+It gives your actor the ability to:
+send messages to itself
+schedule timers
+stop itself
+write WebSocket frames (for WsClient)
+spawn futures
+access the actor’s event loop
+
+Everything an actor “does” besides simple computation goes through ctx.
+
+# WHY DOES EVERY HANDLER RECEIVE ctx?
+
+Because Actix actors are asynchronous and event-driven.
+
+When an actor handles a message, sometimes it needs to:
+send a response
+schedule another action
+push something to the client (for WebSockets)
+stop itself (ctx.stop())
+wait for async future (ctx.spawn)
+
+The context is what allows all this.

@@ -1,10 +1,8 @@
-use std::{collections::HashMap, os::unix::process};
-use serde::{Serialize, Deserialize};
-use actix::{Actor, Addr, Context, Handler, Message, fut::ok};
-use serde_json::json;
+use std::{collections::HashMap};
+use actix::{Actor, Addr, Context, Handler, Message};
 use uuid::Uuid;
 
-use crate::Room;
+use crate::{Room, RoomMessage, WsClient};
 
 
 
@@ -24,7 +22,7 @@ pub struct LeaveRoom{
 }
 
 #[derive(Message)]
-#[rtype(result = "Result<(),String>")]//ok uf valid mode ,error with reason if invalid
+#[rtype(result = "Result<(),String>")]//ok if valid mode ,error with reason if invalid
 pub struct PlayerMove{
     pub room_id:Uuid,
     pub user_id : Uuid,
@@ -36,6 +34,7 @@ pub struct RoomManager{
     pub user_room : HashMap<Uuid,Uuid>  //quick find which room a user is in
 }
 
+
 impl RoomManager{
     pub fn new()->Self{
         Self { 
@@ -44,6 +43,8 @@ impl RoomManager{
         }
     }
 }
+
+
 impl Actor for RoomManager{
     type Context = Context<Self>;
     fn started(&mut self, ctx: &mut Self::Context) {
@@ -190,7 +191,8 @@ impl Handler<LeaveRoom> for RoomManager{
     }
 }
 
-
+//this is actix actor handler
+//ctx is actor's context - the runtime enviorment in which the actor is running
 impl Handler<PlayerMove> for RoomManager{
     type Result = Result<(),String>;
     fn handle(&mut self, msg: PlayerMove, ctx: &mut Self::Context) -> Self::Result {
@@ -246,6 +248,6 @@ impl Handler<PlayerMove> for RoomManager{
             );
         }
         Ok(())
-
     }
 }
+
